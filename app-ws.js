@@ -1,5 +1,15 @@
 const WebSocket = require("ws");
 
+function verifyClient(info, callback) {
+  const token = info.req.url.split("token=")[1];
+
+  if (token === "123") {
+    return callback(true);
+  }
+
+  return callback(false);
+}
+
 function broadcast(jsonObject) {
   if (!this.clients) return;
   this.clients.forEach((client) => {
@@ -26,6 +36,7 @@ function onConnection(ws, req) {
 module.exports = (server) => {
   const wss = new WebSocket.Server({
     server,
+    verifyClient,
   });
 
   wss.on("connection", onConnection);
