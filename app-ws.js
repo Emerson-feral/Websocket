@@ -1,5 +1,14 @@
 const WebSocket = require("ws");
 
+function broadcast(jsonObject) {
+  if (!this.clients) return;
+  this.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(jsonObject));
+    }
+  });
+}
+
 function onError(ws, err) {
   console.error(`onError: ${err.message}`);
 }
@@ -20,6 +29,7 @@ module.exports = (server) => {
   });
 
   wss.on("connection", onConnection);
+  wss.broadcast = broadcast;
 
   console.log(`Web Socket server is running`);
 
